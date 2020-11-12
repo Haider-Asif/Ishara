@@ -27,12 +27,13 @@ In our project, we intend to use convolutional neural networks to classify diffe
 We will be reporting two types of accuracy to measure the performance of our model. First, we will be calculating the overall model’s accuracy, which would report the percentage of images classified correctly over the size of our testing dataset. In addition to that, we think it is important to report per-letter accuracy. This is relevant because there are some letters in Arabic Sign Language which look very similar, which might skew the overall accuracy. So, reporting per-letter accuracy can give us an insight if there are outliers the model should improve on. 
 
 # Ethics
-Who are the major “stakeholders” in this problem, and what are the consequences of mistakes made by your algorithm?
-Answer:
+Who are the major “stakeholders” in this problem, and what are the consequences of mistakes made by your algorithm?  
+Answer:  
 This model is directed towards hearing communities to help them better communicate with the Deaf community. The general population is unaware of the representations of letters in Arabic sign language, and this model overcomes that barrier in communication between both communitiethis. Stakeholders in s problem are firstly the Deaf community, since the output of the model would essentially act as translation medium for their expression. Secondly, it allows the hearing community to understand the communication signs of the Deaf community. Mischaracterization from the model of some sign language letters would lead to miscommunication between the two parties which could potentially defeat (or worsen) the cause of the development of the model. 
 
-What is your dataset? Are there any concerns about how it was collected, or labeled? Is it representative? What kind of underlying historical or societal biases might it contain?
-Answer: 
+
+What is your dataset? Are there any concerns about how it was collected, or labeled? Is it representative? What kind of underlying historical or societal biases might it contain?  
+Answer:   
 Our dataset defined above has been collected from only 40 individuals. The citation of the data doesn’t mention the race of the individuals nor their age, but upon inspecting the images, it seems like the dataset includes both male and female participants. Moreover, the dataset doesn’t include a variation in lighting, location, noise, or camera angle. These are all limitations of the dataset that we are aware about. We understand that based on this collected data, our model may not be effective across all variations of the variables not accounted for in the dataset. 
 
 

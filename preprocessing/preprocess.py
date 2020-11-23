@@ -22,10 +22,10 @@ for sub in sub_folders:
     letter_mapping[sub] = count
     count += 1
 
-training_data = []
-training_labels = []
-testing_data = []
-testing_labels = []
+training_data = np.zeros((45926,4096))
+training_labels = np.zeros(45926)
+testing_data = np.zeros((8121,4096))
+testing_labels = np.zeros(8121)
 
 for sub in sub_folders:
     all_images = os.listdir("./"+folder_name+"/"+sub)
@@ -39,12 +39,18 @@ for sub in sub_folders:
         image = filter.laplace(pre_image)
         flattened = image.flatten()/255.0
         if i < testing_num:
-            testing_data.append(flattened)
-            testing_labels.append(letter_mapping[sub])
+            print(len(flattened))
+            if (len(flattened) > 4096):
+                continue
+            testing_data[i,:] = flattened
+            testing_labels[i] = letter_mapping[sub]
         else:
-            training_data.append(flattened)
-            training_labels.append(letter_mapping[sub])
-
+            print(len(flattened))
+            if (len(flattened) > 4096):
+                continue
+            training_data[i-testing_num,:] = flattened
+            training_labels[i-testing_num] = letter_mapping[sub]
+    
 with open("../data/testing_data", 'wb') as f:
     pickle.dump(testing_data, f, pickle.HIGHEST_PROTOCOL)
 

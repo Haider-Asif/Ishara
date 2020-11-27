@@ -37,8 +37,9 @@ class Preprocess():
                 img_path = "./"+folder_name+"/"+sub+"/"+all_images[i]
                 # print(sub, i)
                 image = cv2.imread(img_path, )
-                # image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-                image = filter.laplace(image)
+                image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+                # image = filter.laplace(image)
+                # image = filter.sobely(image)
                 flattened = image.flatten()/255.0
                 if i < testing_num:
                     if (len(flattened)==4096):

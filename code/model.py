@@ -2,7 +2,7 @@ from __future__ import absolute_import
 from matplotlib import pyplot as plt
 from tensorflow.python.ops.gen_array_ops import pad
 import tensorflow as tf
-from load import get_data
+from preprocess import Preprocess
 
 import os
 import tensorflow as tf
@@ -140,7 +140,6 @@ def test(model, test_inputs, test_labels):
         model.test_loss_list.append(loss)
         # if count==5 or count==50 or count==100:
         #     for x in range(model.batch_size):
-        print("predictions", tf.argmax(predictions,1), "labels", tf.argmax(batched_labels,1))
         acc += model.accuracy(predictions,batched_labels)
         count+=1
     return acc/(len(test_inputs)/model.batch_size)
@@ -225,12 +224,19 @@ def main():
     
     :return: None
     '''
-    test_inputs, test_labels, train_inputs, train_labels = get_data("../data/testing_data", "../data/testing_labels","../data/training_data", "../data/training_labels")
-    num_epochs = 1
+    print("Pre processing started")
+    pre = Preprocess()
+    pre.initial_process("ArASL_Database_54K_Final")
+    test_inputs, test_labels, train_inputs, train_labels = pre.get_data()
+    print(test_inputs.shape, test_labels.shape, train_inputs.shape, train_labels.shape)
+    print("Pre processing done!")
+    num_epochs = 21
     model = Model()
     for i in range(num_epochs):
         print("EPOCH -", i)
         train(model,train_inputs,train_labels)
+        accuracy = test(model,test_inputs,test_labels)
+        print("Accuracy for epoch", accuracy)
     accuracy = test(model,test_inputs,test_labels)
     print("Accuracy", accuracy)
     visualize_loss(model.training_loss_list)

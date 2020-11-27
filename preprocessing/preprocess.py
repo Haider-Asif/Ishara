@@ -35,8 +35,9 @@ for sub in sub_folders:
     for i in range(total_num):
         img_path = "./"+folder_name+"/"+sub+"/"+all_images[i]
         print(sub, i)
-        pre_image = cv2.imread(img_path, )
-        image = filter.laplace(pre_image)
+        image = cv2.imread(img_path, )
+        # image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        # image = filter.laplace(image)
         flattened = image.flatten()/255.0
         if i < testing_num:
             print(len(flattened))

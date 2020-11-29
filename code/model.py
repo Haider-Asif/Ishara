@@ -22,24 +22,35 @@ class Model(tf.keras.Model):
 
         self.batch_size = 64
         self.num_classes = 32
-        self.training_loss_list = []
-        self.test_loss_list = []
-        # TODO: Initialize all hyperparameters
-        self.hidden_layer = 96
-        self.optimizer = tf.keras.optimizers.Adam(learning_rate=0.001)
-        # TODO: Initialize all trainable parameters
-        ##filters
-        self.conv_layer_1 = tf.keras.layers.Conv2D(32,3,strides=(2,2),padding="SAME",activation="relu")
-        self.max_pool_1 = tf.keras.layers.MaxPool2D(3,strides=(2,2),padding="SAME")
-        self.conv_layer_2 = tf.keras.layers.Conv2D(64,3,strides=(2,2),padding="SAME",activation="relu")
-        self.max_pool_2 = tf.keras.layers.MaxPool2D(3,strides=(2,2),padding="SAME")
-        self.conv_layer_3 = tf.keras.layers.Conv2D(self.hidden_layer,3,strides=(2,2),padding="SAME",activation="relu")
-        self.max_pool_3 = tf.keras.layers.MaxPool2D(3,strides=(2,2),padding="SAME")
-        self.flatten = tf.keras.layers.Flatten()
-        self.Dense_1 = tf.keras.layers.Dense(self.hidden_layer,activation="relu")
-        self.dropout = tf.keras.layers.Dropout(0.3)
-        self.Dense_2 = tf.keras.layers.Dense(self.num_classes)
+        self.loss_list = []
+        # hyperparameters
+        self.learning_rate = 0.001
+        self.alpha = 0.2
+        self.optimizer = tf.keras.optimizers.Adam(learning_rate=self.learning_rate)
+        self.first_layer = 64
+        self.second_layer = 128
+        self.third_layer = 256
+        self.dense_size = 512
 
+        #block1
+        self.conv_layer_1 = tf.keras.layers.Conv2D(self.first_layer,3,strides=(2,2),padding="SAME", activation=tf.keras.layers.LeakyReLU(alpha=self.alpha))
+        self.batch_norm_1 = tf.keras.layers.BatchNormalization()
+        self.max_pool_1 = tf.keras.layers.MaxPool2D(3,strides=(2,2),padding="SAME")
+
+        #block2
+        self.conv_layer_2 = tf.keras.layers.Conv2D(self.second_layer,3,strides=(2,2),padding="SAME", activation=tf.keras.layers.LeakyReLU(alpha=self.alpha))
+        self.batch_norm_2 = tf.keras.layers.BatchNormalization()
+        self.max_pool_2 = tf.keras.layers.MaxPool2D(2,strides=(1,1),padding="SAME")
+
+        #block3
+        self.conv_layer_3 = tf.keras.layers.Conv2D(self.third_layer,3,strides=(2,2),padding="SAME",activation=tf.keras.layers.LeakyReLU(alpha=self.alpha))
+        self.batch_norm_3 = tf.keras.layers.BatchNormalization()
+        self.max_pool_3 = tf.keras.layers.MaxPool2D(2,strides=(1,1),padding="SAME")
+
+        self.flatten = tf.keras.layers.Flatten()
+        self.Dense_1 = tf.keras.layers.Dense(self.dense_size,activation=tf.keras.layers.LeakyReLU(alpha=self.alpha))
+        self.dropout_1 = tf.keras.layers.Dropout(0.3)
+        self.Dense_2 = tf.keras.layers.Dense(self.num_classes)
 
     def call(self, inputs):
         """
@@ -52,17 +63,18 @@ class Model(tf.keras.Model):
         # shape of input = (num_inputs (or batch_size), in_height, in_width, in_channels)
         # shape of filter = (filter_height, filter_width, in_channels, out_channels)
         # shape of strides = (batch_stride, height_stride, width_stride, channels_stride)
-        # print("inputs shape", inputs.shape)
-        out_1 = self.conv_layer_1(inputs)
-        # print("shapes after conv 1", out_1.shape)
-        out_2 = self.conv_layer_2(self.max_pool_1(out_1))
-        # print("shapes after conv 2", out_2.shape)
-        out_3 = self.max_pool_3(self.conv_layer_3(self.max_pool_2(out_2)))
-        # print("shapes after conv 3", out_3.shape)
+
+        out_1 = self.batch_norm_1(self.conv_layer_1(inputs))
+        pooled_1 = self.max_pool_1(out_1)
+
+        out_2 = self.batch_norm_2(self.conv_layer_2(pooled_1))
+        pooled_2 = self.max_pool_2(out_2)
+
+        out_3 = self.batch_norm_3(self.conv_layer_3(pooled_2))
+
         flattened = self.flatten(out_3)
-        # print("shapes after flattened", flattened.shape)
-        dense_1 = self.dropout(self.Dense_1(flattened))
-        # print("shapes after dense_1", dense_1.shape)
+
+        dense_1 = self.dropout_1(self.Dense_1(flattened))
         return self.Dense_2(dense_1)
 
     def loss(self, logits, labels):
@@ -115,7 +127,7 @@ def train(model, train_inputs, train_labels):
         with tf.GradientTape() as tape:
             predictions = model.call(batched_inputs)
             loss = model.loss(predictions,batched_labels)
-            model.training_loss_list.append(loss)
+            model.loss_list.append(loss)
         gradients = tape.gradient(loss, model.trainable_variables)
         model.optimizer.apply_gradients(zip(gradients, model.trainable_variables))
 
@@ -131,17 +143,11 @@ def test(model, test_inputs, test_labels):
     all batches
     """
     acc = 0
-    count = 0
     for i in range(0,len(test_inputs),model.batch_size):
         batched_inputs = test_inputs[i:i+model.batch_size]
         batched_labels = test_labels[i:i+model.batch_size]
         predictions = model.call(batched_inputs)
-        loss = model.loss(predictions,batched_labels)
-        model.test_loss_list.append(loss)
-        # if count==5 or count==50 or count==100:
-        #     for x in range(model.batch_size):
         acc += model.accuracy(predictions,batched_labels)
-        count+=1
     return acc/(len(test_inputs)/model.batch_size)
 
 
@@ -230,19 +236,16 @@ def main():
     test_inputs, test_labels, train_inputs, train_labels = pre.get_data()
     print(test_inputs.shape, test_labels.shape, train_inputs.shape, train_labels.shape)
     print("Pre processing done!")
-    num_epochs = 21
+    num_epochs = 25
     model = Model()
     for i in range(num_epochs):
-        print("EPOCH -", i)
+        print("EPOCH -", i+1)
         train(model,train_inputs,train_labels)
         accuracy = test(model,test_inputs,test_labels)
-        print("Accuracy for epoch", accuracy)
+        print("Accuracy for epoch", i+1 , accuracy)
     accuracy = test(model,test_inputs,test_labels)
     print("Accuracy", accuracy)
-    visualize_loss(model.training_loss_list)
-    visualize_loss(model.test_loss_list)
-    X,Y = train_inputs[0:10],train_labels[0:32]
-    # visualize_results(X,model.call(X),Y)
+    visualize_loss(model.loss_list)
     return
 
 

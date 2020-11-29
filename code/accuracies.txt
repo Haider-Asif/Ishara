@@ -1,5 +1,5 @@
 First model:
-
+EPOCH - 0
 Accuracy for epoch tf.Tensor(0.5288632, shape=(), dtype=float32)
 EPOCH - 1
 Accuracy for epoch tf.Tensor(0.68407553, shape=(), dtype=float32)
@@ -41,3 +41,56 @@ EPOCH - 19
 Accuracy for epoch tf.Tensor(0.93892837, shape=(), dtype=float32)
 EPOCH - 20
 Accuracy for epoch tf.Tensor(0.9392421, shape=(), dtype=float32)
+
+Final Model:
+EPOCH - 1
+Accuracy for epoch 1 tf.Tensor(0.9002902, shape=(), dtype=float32)
+EPOCH - 2
+Accuracy for epoch 2 tf.Tensor(0.9392698, shape=(), dtype=float32)
+EPOCH - 3
+Accuracy for epoch 3 tf.Tensor(0.9463846, shape=(), dtype=float32)
+EPOCH - 4
+Accuracy for epoch 4 tf.Tensor(0.9465092, shape=(), dtype=float32)
+EPOCH - 5
+Accuracy for epoch 5 tf.Tensor(0.9407324, shape=(), dtype=float32)
+EPOCH - 6
+Accuracy for epoch 6 tf.Tensor(0.9571769, shape=(), dtype=float32)
+EPOCH - 7
+Accuracy for epoch 7 tf.Tensor(0.9578459, shape=(), dtype=float32)
+EPOCH - 8
+Accuracy for epoch 8 tf.Tensor(0.94327015, shape=(), dtype=float32)
+EPOCH - 9
+Accuracy for epoch 9 tf.Tensor(0.95826584, shape=(), dtype=float32)
+EPOCH - 10
+Accuracy for epoch 10 tf.Tensor(0.9576753, shape=(), dtype=float32)
+EPOCH - 11
+Accuracy for epoch 11 tf.Tensor(0.96510386, shape=(), dtype=float32)
+EPOCH - 12
+Accuracy for epoch 12 tf.Tensor(0.9680154, shape=(), dtype=float32)
+EPOCH - 13
+Accuracy for epoch 13 tf.Tensor(0.963249, shape=(), dtype=float32)
+EPOCH - 14
+Accuracy for epoch 14 tf.Tensor(0.9581736, shape=(), dtype=float32)
+EPOCH - 15
+Accuracy for epoch 15 tf.Tensor(0.95863956, shape=(), dtype=float32)
+EPOCH - 16
+Accuracy for epoch 16 tf.Tensor(0.9683891, shape=(), dtype=float32)
+EPOCH - 17
+Accuracy for epoch 17 tf.Tensor(0.96718943, shape=(), dtype=float32)
+EPOCH - 18
+Accuracy for epoch 18 tf.Tensor(0.96395034, shape=(), dtype=float32)
+EPOCH - 19
+Accuracy for epoch 19 tf.Tensor(0.96490085, shape=(), dtype=float32)
+EPOCH - 20
+Accuracy for epoch 20 tf.Tensor(0.9734184, shape=(), dtype=float32)
+EPOCH - 21
+Accuracy for epoch 21 tf.Tensor(0.9684352, shape=(), dtype=float32)
+EPOCH - 22
+Accuracy for epoch 22 tf.Tensor(0.9752871, shape=(), dtype=float32)
+EPOCH - 23
+Accuracy for epoch 23 tf.Tensor(0.96220624, shape=(), dtype=float32)
+EPOCH - 24
+Accuracy for epoch 24 tf.Tensor(0.9671433, shape=(), dtype=float32)
+EPOCH - 25
+Accuracy for epoch 25 tf.Tensor(0.964947, shape=(), dtype=float32)
+Accuracy tf.Tensor(0.964947, shape=(), dtype=float32)

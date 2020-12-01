@@ -238,6 +238,8 @@ def main():
     print("Pre processing done!")
     num_epochs = 25
     model = Model()
+    accuracy = test(model,test_inputs,test_labels)
+    print("Accuracy for epoch", 0 , accuracy)
     for i in range(num_epochs):
         print("EPOCH -", i+1)
         train(model,train_inputs,train_labels)

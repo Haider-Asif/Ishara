@@ -45,7 +45,6 @@ class Model(tf.keras.Model):
         #block3
         self.conv_layer_3 = tf.keras.layers.Conv2D(self.third_layer,3,strides=(2,2),padding="SAME",activation=tf.keras.layers.LeakyReLU(alpha=self.alpha))
         self.batch_norm_3 = tf.keras.layers.BatchNormalization()
-        self.max_pool_3 = tf.keras.layers.MaxPool2D(2,strides=(1,1),padding="SAME")
 
         self.flatten = tf.keras.layers.Flatten()
         self.Dense_1 = tf.keras.layers.Dense(self.dense_size,activation=tf.keras.layers.LeakyReLU(alpha=self.alpha))

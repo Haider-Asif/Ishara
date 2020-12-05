@@ -13,8 +13,8 @@ import math
 class Model(tf.keras.Model):
     def __init__(self):
         """
-        This model class will contain the architecture for your CNN that 
-        classifies images. Do not modify the constructor, as doing so 
+        This model class will contain the architecture for your CNN that
+        classifies images. Do not modify the constructor, as doing so
         will break the autograder. We have left in variables in the constructor
         for you to fill out, but you are welcome to change them if you'd like.
         """
@@ -23,6 +23,7 @@ class Model(tf.keras.Model):
         self.batch_size = 64
         self.num_classes = 32
         self.loss_list = []
+        self.perletter_acc = np.array(32,1)
         # hyperparameters
         self.learning_rate = 0.001
         self.alpha = 0.2
@@ -81,7 +82,7 @@ class Model(tf.keras.Model):
 
         """
         Calculates the model cross-entropy loss after one forward pass.
-        :param logits: during training, a matrix of shape (batch_size, self.num_classes) 
+        :param logits: during training, a matrix of shape (batch_size, self.num_classes)
         containing the result of multiple convolution and feed forward layers
         Softmax is applied in this function.
         :param labels: during training, matrix of shape (batch_size, self.num_classes) containing the train labels
@@ -98,22 +99,35 @@ class Model(tf.keras.Model):
         :param labels: matrix of size (num_labels, self.num_classes) containing the answers, during training, this will be (batch_size, self.num_classes)
 
         NOTE: DO NOT EDIT
-        
+
         :return: the accuracy of the model as a Tensor
         """
         correct_predictions = tf.equal(tf.argmax(logits, 1), tf.argmax(labels, 1))
         return tf.reduce_mean(tf.cast(correct_predictions, tf.float32))
+'''
+    def per_letter_acc(self, logits, labels):
+        per_letter_indices = []*32
+        num_rows, num_cols = np.shape(labels)
+        for rowInd in range(num_rows):
+            label = tf.argmax(labels[rowInd],1)
+            per_letter_indeices[int(label)].append(rowInd)
+
+        sliced_logits = np.take(logits, per_letter_indices,0)
+
+        self.accuracy()
+'''
+
 
 def train(model, train_inputs, train_labels):
     '''
-    Trains the model on all of the inputs and labels for one epoch. You should shuffle your inputs 
+    Trains the model on all of the inputs and labels for one epoch. You should shuffle your inputs
     and labels - ensure that they are shuffled in the same order using tf.gather.
     To increase accuracy, you may want to use tf.image.random_flip_left_right on your
     inputs before doing the forward pass. You should batch your inputs.
     :param model: the initialized model to use for the forward pass and backward pass
-    :param train_inputs: train inputs (all inputs to use for training), 
+    :param train_inputs: train inputs (all inputs to use for training),
     shape (num_inputs, width, height, num_channels)
-    :param train_labels: train labels (all labels to use for training), 
+    :param train_labels: train labels (all labels to use for training),
     shape (num_labels, num_classes)
     :return: Optionally list of losses per batch to use for visualize_loss
     '''
@@ -133,9 +147,9 @@ def train(model, train_inputs, train_labels):
 
 def test(model, test_inputs, test_labels):
     """
-    Tests the model on the test inputs and labels. You should NOT randomly 
+    Tests the model on the test inputs and labels. You should NOT randomly
     flip images or do any extra preprocessing.
-    :param test_inputs: test data (all images to be tested), 
+    :param test_inputs: test data (all images to be tested),
     shape (num_inputs, width, height, num_channels)
     :param test_labels: test labels (all corresponding labels),
     shape (num_labels, num_classes)
@@ -151,22 +165,48 @@ def test(model, test_inputs, test_labels):
     return acc/(len(test_inputs)/model.batch_size)
 
 
-def visualize_loss(losses): 
+def visualize_loss(losses):
     """
     Uses Matplotlib to visualize the losses of our model.
-    :param losses: list of loss data stored from train. Can use the model's loss_list 
-    field 
+    :param losses: list of loss data stored from train. Can use the model's loss_list
+    field
 
     NOTE: DO NOT EDIT
 
-    :return: doesn't return anything, a plot should pop-up 
+    :return: doesn't return anything, a plot should pop-up
     """
     x = [i for i in range(len(losses))]
     plt.plot(x, losses)
     plt.title('Loss per batch')
     plt.xlabel('Batch')
     plt.ylabel('Loss')
-    plt.show()  
+    plt.show()
+
+def visualize_accuracy(accs):
+    """
+    Uses Matplotlib to visualize accuracies of our model.
+    :param accs: list of accuracy data stored from test.
+    :return: doesn't return anything, a plot should pop-up
+    """
+    x = [i for i in range(len(accs))]
+    plt.plot(x, accs)
+    plt.title('Accuracy per batch')
+    plt.xlabel('Batch')
+    plt.ylabel('Accuracy')
+    plt.show()
+
+def visualize_per_letter_accuracy(letter_accs):
+    """
+    Uses Matplotlib to visualize per-letter accuracy of our model.
+    :param letter_accs: final accuracy corresponding to each ArASL letter
+    :return: doesn't return anything, a plot should pop-up
+    """
+    x = [i for i in range(len(letter_accs))]
+    plt.scatter(x, letter_accs)
+    plt.title('Accuracy per letter')
+    plt.xlabel('Letter')
+    plt.ylabel('Accuracy')
+    plt.show()
 
 def visualize_results(image_inputs, probabilities, image_labels):
     """
@@ -183,7 +223,7 @@ def visualize_results(image_inputs, probabilities, image_labels):
     one for incorrect results
     """
     # Helper function to plot images into 10 columns
-    def plotter(image_indices, label): 
+    def plotter(image_indices, label):
         nc = 10
         nr = math.ceil(len(image_indices) / 10)
         fig = plt.figure()
@@ -198,17 +238,17 @@ def visualize_results(image_inputs, probabilities, image_labels):
             plt.setp(ax.get_xticklabels(), visible=False)
             plt.setp(ax.get_yticklabels(), visible=False)
             ax.tick_params(axis='both', which='both', length=0)
-        
+
     predicted_labels = np.argmax(probabilities, axis=1)
     num_images = image_inputs.shape[0]
 
     # Separate correct and incorrect images
     correct = []
     incorrect = []
-    for i in range(num_images): 
-        if predicted_labels[i] == np.argmax(image_labels[i], axis=0): 
+    for i in range(num_images):
+        if predicted_labels[i] == np.argmax(image_labels[i], axis=0):
             correct.append(i)
-        else: 
+        else:
             incorrect.append(i)
 
     plotter(correct, 'Correct')
@@ -218,16 +258,16 @@ def visualize_results(image_inputs, probabilities, image_labels):
 
 def main():
     '''
-    Read in CIFAR10 data (limited to 2 classes), initialize your model, and train and 
+    Read in CIFAR10 data (limited to 2 classes), initialize your model, and train and
     test your model for a number of epochs. We recommend that you train for
-    10 epochs and at most 25 epochs. 
-    
-    CS1470 students should receive a final accuracy 
+    10 epochs and at most 25 epochs.
+
+    CS1470 students should receive a final accuracy
     on the testing examples for cat and dog of >=70%.
-    
-    CS2470 students should receive a final accuracy 
+
+    CS2470 students should receive a final accuracy
     on the testing examples for cat and dog of >=75%.
-    
+
     :return: None
     '''
     print("Pre processing started")
@@ -237,15 +277,18 @@ def main():
     print(test_inputs.shape, test_labels.shape, train_inputs.shape, train_labels.shape)
     print("Pre processing done!")
     num_epochs = 25
+    acc_list = []
     model = Model()
     for i in range(num_epochs):
         print("EPOCH -", i+1)
         train(model,train_inputs,train_labels)
         accuracy = test(model,test_inputs,test_labels)
         print("Accuracy for epoch", i+1 , accuracy)
+        acc_list.append(accuracy)
     accuracy = test(model,test_inputs,test_labels)
     print("Accuracy", accuracy)
     visualize_loss(model.loss_list)
+    visualize_accuracy(acc_list)
     return
 
 

@@ -63,3 +63,6 @@ class Preprocess():
 
     # initial_process("ArASL_Database_54K_Final")
     # get_data(testing_data, testing_labels,training_data, training_labels)
+#pre = Preprocess()
+#pre.initial_process(folder_name = "ArASL_Database_54K_Final")
+#pre.get_data()

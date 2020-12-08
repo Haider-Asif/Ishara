@@ -105,15 +105,23 @@ class Model(tf.keras.Model):
         return tf.reduce_mean(tf.cast(correct_predictions, tf.float32))
 
     def per_letter_accuracy(self, logits, labels):
-        per_letter_indices = []*32
+        per_letter_indices = [[] for x in range(32)]
+
         num_rows, num_cols = np.shape(labels)
         for rowInd in range(num_rows):
-            label = tf.argmax(labels[rowInd],1)
+            print("labels[rowInd]", labels[rowInd])
+            print("its shape", np.shape(labels[rowInd]))
+            label = tf.argmax(np.expand_dims(labels[rowInd], 1),0)
+            print("label", label)
+            print('per_letter_indices shape', np.shape(per_letter_indices))
             per_letter_indices[int(label)].append(rowInd)
 
         for letter in range(32):
             sliced_logits = np.take(logits, per_letter_indices[letter], 0)
             sliced_labels = np.take(labels, per_letter_indices[letter], 0)
+            print("sliced logits shape", np.shape(sliced_logits))
+            print("sliced labels shape", np.shape(sliced_labels))
+            print('acc result', self.accuracy(sliced_logits, sliced_labels))
             self.per_letter_acc[letter] = self.accuracy(sliced_logits, sliced_labels)
 
 
@@ -162,7 +170,7 @@ def test(model, test_inputs, test_labels):
         batched_labels = test_labels[i:i+model.batch_size]
         predictions = model.call(batched_inputs)
         acc += model.accuracy(predictions,batched_labels)
-        model.per_letter_acc = np.add(model.per_letter_acc, model.per_letter_accuracy(predictions,batched_labels))
+        model.per_letter_acc = np.add(model.per_letter_acc, model.per_letter_accuracy(predictions,batched_labels), 0)
     return acc/(len(test_inputs)/model.batch_size), per_letter_accuracy/(len(test_inputs)/model.batch_size)
 
 
@@ -293,6 +301,7 @@ def main():
     visualize_loss(model.loss_list)
     visualize_accuracy(acc_list)
     print('per_letter_accuracy', per_letter_accuracy)
+    visualize_per_letter_accuracy(model.per_letter_acc)
     return
 
 

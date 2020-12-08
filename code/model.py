@@ -100,16 +100,6 @@ class Model(tf.keras.Model):
         """
         correct_predictions = tf.equal(tf.argmax(logits, 1), tf.argmax(labels, 1))
         return tf.reduce_mean(tf.cast(correct_predictions, tf.float32))
-'''
-    def per_letter_acc(self, logits, labels):
-        per_letter_indices = []*32
-        num_rows, num_cols = np.shape(labels)
-        for rowInd in range(num_rows):
-            label = tf.argmax(labels[rowInd],1)
-            per_letter_indeices[int(label)].append(rowInd)
-        sliced_logits = np.take(logits, per_letter_indices,0)
-        self.accuracy()
-'''
 
 
 def train(model, train_inputs, train_labels):

@@ -23,7 +23,7 @@ class Model(tf.keras.Model):
         self.batch_size = 64
         self.num_classes = 32
         self.loss_list = []
-        self.per_letter_acc = np.array((32,1))
+        self.perletter_acc = []
         # hyperparameters
         self.learning_rate = 0.001
         self.alpha = 0.2
@@ -285,7 +285,7 @@ def main():
     test_inputs, test_labels, train_inputs, train_labels = pre.get_data()
     print(test_inputs.shape, test_labels.shape, train_inputs.shape, train_labels.shape)
     print("Pre processing done!")
-    num_epochs = 25
+    num_epochs = 20
     acc_list = []
     model = Model()
     accuracy = test(model,test_inputs,test_labels)

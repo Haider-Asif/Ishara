@@ -23,7 +23,6 @@ class Model(tf.keras.Model):
         self.batch_size = 64
         self.num_classes = 32
         self.loss_list = []
-        self.perletter_acc = []
         # hyperparameters
         self.learning_rate = 0.001
         self.alpha = 0.2
@@ -96,34 +95,21 @@ class Model(tf.keras.Model):
         :param logits: a matrix of size (num_inputs, self.num_classes); during training, this will be (batch_size, self.num_classes)
         containing the result of multiple convolution and feed forward layers
         :param labels: matrix of size (num_labels, self.num_classes) containing the answers, during training, this will be (batch_size, self.num_classes)
-
         NOTE: DO NOT EDIT
-
         :return: the accuracy of the model as a Tensor
         """
         correct_predictions = tf.equal(tf.argmax(logits, 1), tf.argmax(labels, 1))
         return tf.reduce_mean(tf.cast(correct_predictions, tf.float32))
-
-    def per_letter_accuracy(self, logits, labels):
-        per_letter_indices = [[] for x in range(32)]
-
+'''
+    def per_letter_acc(self, logits, labels):
+        per_letter_indices = []*32
         num_rows, num_cols = np.shape(labels)
         for rowInd in range(num_rows):
-            print("labels[rowInd]", labels[rowInd])
-            print("its shape", np.shape(labels[rowInd]))
-            label = tf.argmax(np.expand_dims(labels[rowInd], 1),0)
-            print("label", label)
-            print('per_letter_indices shape', np.shape(per_letter_indices))
-            per_letter_indices[int(label)].append(rowInd)
-
-        for letter in range(32):
-            sliced_logits = np.take(logits, per_letter_indices[letter], 0)
-            sliced_labels = np.take(labels, per_letter_indices[letter], 0)
-            print("sliced logits shape", np.shape(sliced_logits))
-            print("sliced labels shape", np.shape(sliced_labels))
-            print('acc result', self.accuracy(sliced_logits, sliced_labels))
-            self.per_letter_acc[letter] = self.accuracy(sliced_logits, sliced_labels)
-
+            label = tf.argmax(labels[rowInd],1)
+            per_letter_indeices[int(label)].append(rowInd)
+        sliced_logits = np.take(logits, per_letter_indices,0)
+        self.accuracy()
+'''
 
 
 def train(model, train_inputs, train_labels):
@@ -170,8 +156,7 @@ def test(model, test_inputs, test_labels):
         batched_labels = test_labels[i:i+model.batch_size]
         predictions = model.call(batched_inputs)
         acc += model.accuracy(predictions,batched_labels)
-        model.per_letter_acc = np.add(model.per_letter_acc, model.per_letter_accuracy(predictions,batched_labels), 0)
-    return acc/(len(test_inputs)/model.batch_size), per_letter_accuracy/(len(test_inputs)/model.batch_size)
+    return acc/(len(test_inputs)/model.batch_size)
 
 
 def visualize_loss(losses):
@@ -179,9 +164,7 @@ def visualize_loss(losses):
     Uses Matplotlib to visualize the losses of our model.
     :param losses: list of loss data stored from train. Can use the model's loss_list
     field
-
     NOTE: DO NOT EDIT
-
     :return: doesn't return anything, a plot should pop-up
     """
     x = [i for i in range(len(losses))]
@@ -204,19 +187,6 @@ def visualize_accuracy(accs):
     plt.ylabel('Accuracy')
     plt.show()
 
-def visualize_per_letter_accuracy(letter_accs):
-    """
-    Uses Matplotlib to visualize per-letter accuracy of our model.
-    :param letter_accs: final accuracy corresponding to each ArASL letter
-    :return: doesn't return anything, a plot should pop-up
-    """
-    x = [i for i in range(len(letter_accs))]
-    plt.scatter(x, letter_accs)
-    plt.title('Accuracy per letter')
-    plt.xlabel('Letter')
-    plt.ylabel('Accuracy')
-    plt.show()
-
 def visualize_results(image_inputs, probabilities, image_labels):
     """
     Uses Matplotlib to visualize the correct and incorrect results of our model.
@@ -225,9 +195,7 @@ def visualize_results(image_inputs, probabilities, image_labels):
     :param image_labels: the labels from get_data(), shape (50, num_classes)
     :param first_label: the name of the first class, "cat"
     :param second_label: the name of the second class, "dog"
-
     NOTE: DO NOT EDIT
-
     :return: doesn't return anything, two plots should pop-up, one for correct results,
     one for incorrect results
     """
@@ -270,13 +238,10 @@ def main():
     Read in CIFAR10 data (limited to 2 classes), initialize your model, and train and
     test your model for a number of epochs. We recommend that you train for
     10 epochs and at most 25 epochs.
-
     CS1470 students should receive a final accuracy
     on the testing examples for cat and dog of >=70%.
-
     CS2470 students should receive a final accuracy
     on the testing examples for cat and dog of >=75%.
-
     :return: None
     '''
     print("Pre processing started")
@@ -296,12 +261,11 @@ def main():
         accuracy = test(model,test_inputs,test_labels)
         print("Accuracy for epoch", i+1 , accuracy)
         acc_list.append(accuracy)
-    accuracy, per_letter_accuracy = test(model,test_inputs,test_labels)
+    accuracy = test(model,test_inputs,test_labels)
     print("Accuracy", accuracy)
     visualize_loss(model.loss_list)
     visualize_accuracy(acc_list)
-    print('per_letter_accuracy', per_letter_accuracy)
-    visualize_per_letter_accuracy(model.per_letter_acc)
+    visualize_results(train_inputs[0:10],model.call(train_inputs[0:10],train_labels[0:10]))
     return
 
 

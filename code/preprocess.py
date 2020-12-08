@@ -59,10 +59,3 @@ class Preprocess():
         self.training_labels = tf.one_hot(self.training_labels,32,dtype=tf.int32)
         print(self.testing_data.shape, self.testing_labels.shape, self.training_data.shape, self.training_labels.shape)
         return self.testing_data, self.testing_labels, self.training_data, self.training_labels
-
-
-    # initial_process("ArASL_Database_54K_Final")
-    # get_data(testing_data, testing_labels,training_data, training_labels)
-#pre = Preprocess()
-#pre.initial_process(folder_name = "ArASL_Database_54K_Final")
-#pre.get_data()

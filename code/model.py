@@ -240,7 +240,7 @@ def main():
     test_inputs, test_labels, train_inputs, train_labels = pre.get_data()
     print(test_inputs.shape, test_labels.shape, train_inputs.shape, train_labels.shape)
     print("Pre processing done!")
-    num_epochs = 20
+    num_epochs = 1
     acc_list = []
     model = Model()
     accuracy = test(model,test_inputs,test_labels)

@@ -44,3 +44,4 @@ def plot(img, filtered):
     plt.subplot(1,2,2),plt.imshow(filtered,cmap = 'gray')
     plt.title('Filtered'), plt.xticks([]), plt.yticks([])
     plt.show()
+    

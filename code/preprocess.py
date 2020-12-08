@@ -40,6 +40,7 @@ class Preprocess():
                 # image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
                 # image = filter.laplace(image)
                 image = filter.sobely(image)
+                # filter.plot(image,image2)
                 flattened = image.flatten()/255.0
                 if i < testing_num:
                     if (len(flattened)==4096):

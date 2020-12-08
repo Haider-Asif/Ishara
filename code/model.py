@@ -240,7 +240,7 @@ def main():
     test_inputs, test_labels, train_inputs, train_labels = pre.get_data()
     print(test_inputs.shape, test_labels.shape, train_inputs.shape, train_labels.shape)
     print("Pre processing done!")
-    num_epochs = 25
+    num_epochs = 1
     acc_list = []
     model = Model()
     accuracy = test(model,test_inputs,test_labels)
@@ -253,9 +253,9 @@ def main():
         acc_list.append(accuracy)
     accuracy = test(model,test_inputs,test_labels)
     print("Accuracy", accuracy)
+    # visualize_results(train_inputs[0:10],model.call(train_inputs[0:10,:,:,:]),train_labels[0:10])
     visualize_loss(model.loss_list)
     visualize_accuracy(acc_list)
-    visualize_results(train_inputs[0:10],model.call(model,train_inputs[0:10],train_labels[0:10]))
     return
 
 

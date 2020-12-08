@@ -23,7 +23,7 @@ class Model(tf.keras.Model):
         self.batch_size = 64
         self.num_classes = 32
         self.loss_list = []
-        self.perletter_acc = np.array(32,1)
+        self.per_letter_acc = np.array((32,1))
         # hyperparameters
         self.learning_rate = 0.001
         self.alpha = 0.2
@@ -103,18 +103,19 @@ class Model(tf.keras.Model):
         """
         correct_predictions = tf.equal(tf.argmax(logits, 1), tf.argmax(labels, 1))
         return tf.reduce_mean(tf.cast(correct_predictions, tf.float32))
-'''
-    def per_letter_acc(self, logits, labels):
+
+    def per_letter_accuracy(self, logits, labels):
         per_letter_indices = []*32
         num_rows, num_cols = np.shape(labels)
         for rowInd in range(num_rows):
             label = tf.argmax(labels[rowInd],1)
-            per_letter_indeices[int(label)].append(rowInd)
+            per_letter_indices[int(label)].append(rowInd)
 
-        sliced_logits = np.take(logits, per_letter_indices,0)
+        for letter in range(32):
+            sliced_logits = np.take(logits, per_letter_indices[letter], 0)
+            sliced_labels = np.take(labels, per_letter_indices[letter], 0)
+            self.per_letter_acc[letter] = self.accuracy(sliced_logits, sliced_labels)
 
-        self.accuracy()
-'''
 
 
 def train(model, train_inputs, train_labels):
@@ -161,7 +162,8 @@ def test(model, test_inputs, test_labels):
         batched_labels = test_labels[i:i+model.batch_size]
         predictions = model.call(batched_inputs)
         acc += model.accuracy(predictions,batched_labels)
-    return acc/(len(test_inputs)/model.batch_size)
+        model.per_letter_acc = np.add(model.per_letter_acc, model.per_letter_accuracy(predictions,batched_labels))
+    return acc/(len(test_inputs)/model.batch_size), per_letter_accuracy/(len(test_inputs)/model.batch_size)
 
 
 def visualize_loss(losses):
@@ -286,10 +288,11 @@ def main():
         accuracy = test(model,test_inputs,test_labels)
         print("Accuracy for epoch", i+1 , accuracy)
         acc_list.append(accuracy)
-    accuracy = test(model,test_inputs,test_labels)
+    accuracy, per_letter_accuracy = test(model,test_inputs,test_labels)
     print("Accuracy", accuracy)
     visualize_loss(model.loss_list)
     visualize_accuracy(acc_list)
+    print('per_letter_accuracy', per_letter_accuracy)
     return
 
 

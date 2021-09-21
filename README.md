@@ -38,7 +38,7 @@ Our dataset defined above has been collected from only 40 individuals. The citat
 
 
 # Division of Labor:
-Preprocessing: Fatimah  
+Preprocessing: Haider, Fatimah  
 CNN implementation: Fatimah, Haider, Moustafa  
 Train & test: Moustafa  
 Results analysis & Optimization: Haider
